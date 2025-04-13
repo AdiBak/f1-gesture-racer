@@ -10,40 +10,40 @@ export default function Home() {
   const [steeringAngle, setSteeringAngle] = useState(0);
   const [gear, setGear] = useState("Idle");
   const [direction, setDirection] = useState("Straight");
-  const handTrackerRef = useRef();
 
-  const [videoEl, setVideoEl] = useState(null);
+  const handTrackerRef = useRef();
+  const miniCamRef = useRef();
 
   useEffect(() => {
-    const el = handTrackerRef.current?.getVideoElement?.();
-    if (el) setVideoEl(el);
+    const webcamVideo = handTrackerRef.current?.getVideoElement?.();
+    const miniCam = miniCamRef.current;
+
+    if (webcamVideo && miniCam && webcamVideo.srcObject) {
+      miniCam.srcObject = webcamVideo.srcObject;
+    }
   }, []);
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-black">
-      {/* 3D Scene */}
+      {/* === 3D Track + Car Scene === */}
       <RaceScene speed={speed} steering={steeringAngle} />
 
-      {/* HUD Overlay */}
+      {/* === Central HUD Bar === */}
       <RaceHUD speed={speed} gear={gear} direction={direction} />
 
-      {/* Mini Webcam Feed */}
-      {videoEl && (
-        <div className="absolute top-4 left-4 w-48 h-36 rounded overflow-hidden border-2 border-white z-50 shadow-md">
-          <video
-            ref={(node) => {
-              if (node && videoEl) node.srcObject = videoEl.srcObject;
-            }}
-            className="w-full h-full object-cover"
-            autoPlay
-            playsInline
-            muted
-            style={{ transform: "scaleX(-1)" }}
-          />
-        </div>
-      )}
+      {/* === Stable Mini Handcam View === */}
+      <div className="absolute top-4 left-4 w-48 h-36 border-2 border-white rounded overflow-hidden z-50 shadow-lg">
+        <video
+          ref={miniCamRef}
+          className="w-full h-full object-cover"
+          autoPlay
+          playsInline
+          muted
+          style={{ transform: "scaleX(-1)" }}
+        />
+      </div>
 
-      {/* Hand Gesture Engine (hidden behind the scenes) */}
+      {/* === Invisible Gesture Detection Engine === */}
       <div className="absolute bottom-4 left-4 w-[320px] h-[240px] z-0 opacity-0 pointer-events-none">
         <HandTracker
           ref={handTrackerRef}

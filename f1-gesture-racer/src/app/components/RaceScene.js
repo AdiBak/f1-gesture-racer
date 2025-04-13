@@ -1,56 +1,95 @@
 "use client";
 
 import React, { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import {
+  Physics,
+  RapierRigidBody,
+  RigidBody,
+  useRapier,
+  vec3,
+} from "@react-three/rapier";
 
+// === Bahrain Track with static collider ===
 const BahrainTrack = () => {
-    const { scene } = useGLTF("/models/bahrain.glb");
-    return <primitive object={scene} scale={1.5} position={[0, 0, 0]} />;
+  const { scene } = useGLTF("/models/bahrain.glb");
+
+  return (
+    <RigidBody type="fixed" colliders="trimesh">
+      <primitive object={scene} scale={1.5} position={[0, 0, 0]} />
+    </RigidBody>
+  );
 };
 
+// === F1 Car with dynamic physics movement ===
 const F1Car = ({ speed, steering }) => {
-    const { scene } = useGLTF("/models/f1car.glb");
-    const carRef = useRef(null);
-    const { camera } = useThree();
+  const { scene } = useGLTF("/models/f1car.glb");
+  const carRef = useRef();
+  const { camera } = useThree();
 
-    useFrame(() => {
-        if (!carRef.current) return;
+  useFrame(() => {
+    if (!carRef.current) return;
+  
+    const body = carRef.current;
+    const pos = body.translation();
+    const rot = body.rotation(); // <- Rapier gives a quaternion
+  
+    // Use correct quaternion for forward direction
+    const quat = new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w);
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(quat);
+  
+    if (speed > 0.5) {
+      const velocity = forward.multiplyScalar(speed / 80);
+      body.setLinvel(velocity, true);
+      body.setAngvel({ x: 0, y: steering / 30, z: 0 }, true);
+    } else {
+      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    }
+  
+    // Chase cam
+    const chaseOffset = new THREE.Vector3(0, 4, 8).applyQuaternion(quat);
+    const cameraTarget = new THREE.Vector3(pos.x, pos.y, pos.z).add(chaseOffset);
+    camera.position.lerp(cameraTarget, 0.1);
+    camera.lookAt(new THREE.Vector3(pos.x, pos.y, pos.z));
+  });
+  
+  
 
-        // Move forward along Z based on speed
-        const moveSpeed = speed / 500; // Adjust scaling as needed
-        carRef.current.position.z -= moveSpeed;
-
-        // Rotate based on steering (-30 to +30 mapped to radians)
-        const steerAngle = (steering / 30) * 0.3; // max ~0.3 rad
-        carRef.current.rotation.y = steerAngle;
-
-        // === CHASE CAMERA ===
-        const offset = new THREE.Vector3(0, 5, 10); // back and up
-        const targetPos = carRef.current.position
-        .clone()
-        .add(offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), carRef.current.rotation.y));
-
-        camera.position.lerp(targetPos, 0.1); // smooth camera move
-        camera.lookAt(carRef.current.position);
-    });
-    
-    return <primitive ref={carRef} object={scene} scale={0.05} position={[60, 30, -100]} />;
+  return (
+    <RigidBody
+      ref={carRef}
+      colliders="cuboid"
+      mass={1}
+      linearDamping={1.5}
+      angularDamping={1.5}
+      position={[10, 12.5, 60]}
+      scale={[0.1, 0.1, 0.1]}
+      rotation={[0, 10, 0]}
+      enabledRotations={[false, true, false]} // Lock X/Z rotation
+    >
+      <primitive object={scene} scale={0.5} />
+    </RigidBody>
+  );
 };
 
-const RaceScene = ({ speed = 0, steering = 0 }) => {
-    console.log(F1Car.position);
-    return (
-        <Canvas camera={{ position: [0, 5, 10], fov: 60 }}>
-            <ambientLight intensity={0.7} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <BahrainTrack />
-            <F1Car speed={speed} steering={steering} />
-            <OrbitControls />
-        </Canvas>
-    );
+const RaceScene = ({ speed, steering }) => {
+  return (
+    <Canvas camera={{ position: [0, 5, 10], fov: 60 }}>
+      <ambientLight intensity={0.7} />
+      <directionalLight position={[10, 10, 5]} intensity={1} />
+
+      <Physics gravity={[0, -9.81, 0]}>
+        <BahrainTrack />
+        <F1Car speed={speed} steering={steering} />
+      </Physics>
+
+      {/* Optional for dev camera movement */}
+      <OrbitControls />
+    </Canvas>
+  );
 };
 
 export default RaceScene;

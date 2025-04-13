@@ -71,16 +71,16 @@ const HandTracker = forwardRef(
             const [info1, info2] = results.multiHandedness;
 
             const isHand1Left = info1.label === "Left";
-            const rightHand = isHand1Left ? hand1 : hand2;
-            const leftHand = isHand1Left ? hand2 : hand1;
+            const leftHand = isHand1Left ? hand1 : hand2;
+            const rightHand = isHand1Left ? hand2 : hand1;
 
             const rightIndexUp = isFingerPointingUp(rightHand[8], rightHand[5]);
             const leftIndexUp = isFingerPointingUp(leftHand[8], leftHand[5]);
 
             const gear = rightIndexUp
-              ? "ACCELERATE"
-              : leftIndexUp
               ? "BRAKE"
+              : leftIndexUp
+              ? "ACCELERATE"
               : "Idle";
             debug.gear = gear;
             onGearChange(gear);

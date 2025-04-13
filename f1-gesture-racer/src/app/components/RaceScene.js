@@ -34,29 +34,30 @@ const F1Car = ({ speed, steering }) => {
   
     const body = carRef.current;
     const pos = body.translation();
-    const rot = body.rotation(); // <- Rapier gives a quaternion
+    const rot = body.rotation();
   
-    // Use correct quaternion for forward direction
     const quat = new THREE.Quaternion(rot.x, rot.y, rot.z, rot.w);
     const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(quat);
   
     if (speed > 0.5) {
-      const velocity = forward.multiplyScalar(speed / 80);
-      body.setLinvel(velocity, true);
+      // Apply small impulse to build speed smoothly
+      const impulse = forward.multiplyScalar(speed); // reduced for better control
+      body.applyImpulse(impulse, true);
+  
+      // Turn only while moving
       body.setAngvel({ x: 0, y: steering / 30, z: 0 }, true);
     } else {
-      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      // Stop rotation & drift when idle
       body.setAngvel({ x: 0, y: 0, z: 0 }, true);
     }
   
-    // Chase cam
+    // Chase camera
     const chaseOffset = new THREE.Vector3(0, 4, 8).applyQuaternion(quat);
-    const cameraTarget = new THREE.Vector3(pos.x, pos.y, pos.z).add(chaseOffset);
-    camera.position.lerp(cameraTarget, 0.1);
+    const camTarget = new THREE.Vector3(pos.x, pos.y, pos.z).add(chaseOffset);
+  
+    camera.position.lerp(camTarget, 0.1);
     camera.lookAt(new THREE.Vector3(pos.x, pos.y, pos.z));
   });
-  
-  
 
   return (
     <RigidBody

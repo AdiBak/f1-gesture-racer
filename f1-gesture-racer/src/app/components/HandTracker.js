@@ -22,6 +22,7 @@ const HandTracker = forwardRef(
 
     const distance = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
     const isFingerPointingUp = (tip, base) => tip.y < base.y - 0.05;
+    
     const normalizeAngle = (rawAngle) => {
       let angle = rawAngle;
       if (angle > 90) angle -= 180;
@@ -100,7 +101,7 @@ const HandTracker = forwardRef(
               Math.PI;
 
             const normalizedAngle = normalizeAngle(rawAngle);
-            const clampedAngle = Math.max(-120, Math.min(120, normalizedAngle));
+            const clampedAngle = Math.max(-150, Math.min(150, normalizedAngle));
 
             const direction =
               clampedAngle > 10

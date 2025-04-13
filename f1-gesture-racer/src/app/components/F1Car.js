@@ -41,7 +41,7 @@ const F1Car = ({ speed, steering }) => {
     
     // Gradually change velocity instead of setting it directly
     // This prevents the jerky motion
-    const targetVelocity = forward.clone().multiplyScalar(speed / 20);
+    const targetVelocity = forward.clone().multiplyScalar(speed / 10);
     const currentVel = body.linvel();
     const currentVelocity = new THREE.Vector3(currentVel.x, currentVel.y, currentVel.z);
     

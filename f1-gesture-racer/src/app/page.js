@@ -15,12 +15,17 @@ export default function Home() {
   const miniCamRef = useRef();
 
   useEffect(() => {
-    const webcamVideo = handTrackerRef.current?.getVideoElement?.();
-    const miniCam = miniCamRef.current;
-
-    if (webcamVideo && miniCam && webcamVideo.srcObject) {
-      miniCam.srcObject = webcamVideo.srcObject;
-    }
+    const interval = setInterval(() => {
+      const webcamVideo = handTrackerRef.current?.getVideoElement?.();
+      const miniCam = miniCamRef.current;
+  
+      if (webcamVideo && miniCam && webcamVideo.srcObject) {
+        miniCam.srcObject = webcamVideo.srcObject;
+        clearInterval(interval); // ✅ once it's set, stop checking
+      }
+    }, 300); // retry every 300ms
+  
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -32,10 +37,17 @@ export default function Home() {
       <RaceHUD speed={speed} gear={gear} direction={direction} />
 
       {/* === Stable Mini Handcam View === */}
-      <div className="absolute top-4 left-4 w-48 h-36 border-2 border-white rounded overflow-hidden z-50 shadow-lg">
+      <div className="absolute top-4 left-4 w-[180px] h-[120px] border-2 border-white rounded z-50 shadow-lg">
+      <HandTracker
+          ref={handTrackerRef}
+          onSpeedChange={setSpeed}
+          onSteeringChange={setSteeringAngle}
+          onGearChange={setGear}
+          onDirectionChange={setDirection}
+        /> 
         <video
           ref={miniCamRef}
-          className="w-full h-full object-cover"
+          className="w-full h-full"
           autoPlay
           playsInline
           muted
@@ -43,16 +55,6 @@ export default function Home() {
         />
       </div>
 
-      {/* === Invisible Gesture Detection Engine === */}
-      <div className="absolute bottom-4 left-4 w-[320px] h-[240px] z-0 opacity-0 pointer-events-none">
-        <HandTracker
-          ref={handTrackerRef}
-          onSpeedChange={setSpeed}
-          onSteeringChange={setSteeringAngle}
-          onGearChange={setGear}
-          onDirectionChange={setDirection}
-        />
-      </div>
     </main>
   );
 }

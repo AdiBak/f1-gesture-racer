@@ -135,6 +135,7 @@ const HandTracker = forwardRef(
             height: 480,
           });
           camera.start();
+          console.log("cam start");
         }
       };
 
@@ -172,7 +173,7 @@ const HandTracker = forwardRef(
     }, [actualSpeed]);
 
     return (
-      <div className="relative w-full h-full">
+      <div className="absolute top-0 left-0 w-[180px] h-[120px] z-50 border-2 border-white rounded overflow-hidden">
         <video
           ref={webcamRef}
           className="absolute w-full h-full object-cover"
@@ -185,13 +186,13 @@ const HandTracker = forwardRef(
           ref={canvasRef}
           width={640}
           height={480}
-          className="absolute top-0 left-0 z-10"
+          className="absolute top-0 left-0 w-full h-full z-10"
         />
-        <SteeringWheelHUD
+        {/*<SteeringWheelHUD
           angle={Number(debugInfo?.clampedAngle || 0)}
           accelerating={debugInfo?.gear === "ACCELERATE"}
           braking={debugInfo?.gear === "BRAKE"}
-        />
+        />*/}
       </div>
     );
   }

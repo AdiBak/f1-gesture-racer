@@ -1,9 +1,10 @@
-// useWheels.js
-import { useCompoundBody } from "@react-three/cannon";
 import { useRef } from "react";
+import { useCompoundBody } from "@react-three/cannon";
+import { exp } from "@tensorflow/tfjs";
 
-export const useWheels = (width, height, front, radius) => {
+export const useWheels = (width, height, frontOffset, radius) => {
   const wheels = [useRef(), useRef(), useRef(), useRef()];
+
   const wheelInfo = {
     radius,
     directionLocal: [0, -1, 0],
@@ -21,25 +22,28 @@ export const useWheels = (width, height, front, radius) => {
   };
 
   const wheelInfos = [
-    { ...wheelInfo, chassisConnectionPointLocal: [-width, height, front], isFrontWheel: true },
-    { ...wheelInfo, chassisConnectionPointLocal: [ width, height, front], isFrontWheel: true },
-    { ...wheelInfo, chassisConnectionPointLocal: [-width, height, -front], isFrontWheel: false },
-    { ...wheelInfo, chassisConnectionPointLocal: [ width, height, -front], isFrontWheel: false },
+    { ...wheelInfo, chassisConnectionPointLocal: [-width, height,  frontOffset], isFrontWheel: true },
+    { ...wheelInfo, chassisConnectionPointLocal: [ width, height,  frontOffset], isFrontWheel: true },
+    { ...wheelInfo, chassisConnectionPointLocal: [-width, height, -frontOffset], isFrontWheel: false },
+    { ...wheelInfo, chassisConnectionPointLocal: [ width, height, -frontOffset], isFrontWheel: false },
   ];
 
-  const propsFunc = () => ({
+  const wheelShape = {
+    args: [radius, radius, 0.015, 16],
+    rotation: [0, 0, -Math.PI / 2],
+    type: "Cylinder",
+  };
+
+  const props = () => ({
     collisionFilterGroup: 0,
     mass: 1,
-    shapes: [
-      {
-        args: [radius, radius, 0.015, 16],
-        rotation: [0, 0, -Math.PI / 2],
-        type: "Cylinder",
-      },
-    ],
+    shapes: [wheelShape],
     type: "Kinematic",
   });
 
-  wheels.forEach((ref) => useCompoundBody(propsFunc, ref));
+  wheels.forEach((ref) => useCompoundBody(props, ref));
+
   return [wheels, wheelInfos];
 };
+
+export default useWheels;

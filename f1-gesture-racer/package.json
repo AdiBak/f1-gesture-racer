@@ -18,11 +18,13 @@
     "@react-three/rapier": "^2.1.0",
     "@tensorflow-models/handpose": "^0.1.0",
     "@tensorflow/tfjs": "^4.22.0",
+    "cannon-es": "^0.20.0",
     "next": "15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-webcam": "^7.2.0",
     "three": "^0.175.0",
+    "three-buffer-geometry-utils": "^1.0.0",
     "three-stdlib": "^2.35.15"
   },
   "devDependencies": {

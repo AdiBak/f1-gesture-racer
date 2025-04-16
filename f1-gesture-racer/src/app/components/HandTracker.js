@@ -140,21 +140,30 @@ const HandTracker = forwardRef(
 
       setup();
     }, [onGearChange, onDirectionChange, onSteeringChange]);
-
     useEffect(() => {
       const interval = setInterval(() => {
         setActualSpeed((prev) => {
           const gear = debugInfo.gear;
           let next = prev;
-
-          if (gear === "ACCELERATE") next = Math.min(prev + 2, 200);
-          else if (gear === "BRAKE") next = Math.max(prev - 5, 0);
-          else next = Math.max(prev - 1, 0);
-
+    
+          if (gear === "ACCELERATE") {
+            // Gradual acceleration that increases with speed
+            const acceleration = Math.max(0.5, Math.min(1.5, prev / 100));
+            next = Math.min(prev + acceleration, 200);
+          } else if (gear === "BRAKE") {
+            // Gradual deceleration with more effect at higher speeds
+            const deceleration = Math.max(0.5, Math.min(3, prev / 50));
+            next = Math.max(prev - deceleration, 0);
+          } else {
+            // Gentler idle deceleration
+            const idleDeceleration = Math.max(0.1, prev / 200);
+            next = Math.max(prev - idleDeceleration, 0);
+          }
+    
           return next;
         });
       }, 50);
-
+    
       return () => clearInterval(interval);
     }, [debugInfo.gear]);
 

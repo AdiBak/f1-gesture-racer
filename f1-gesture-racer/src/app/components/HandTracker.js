@@ -114,12 +114,12 @@ const HandTracker = forwardRef(
             onSteeringChange(clampedAngle);
             debug.clampedAngle = clampedAngle;
 
-            ctx.beginPath();
+           /* ctx.beginPath();
             ctx.moveTo(leftMid.x * canvas.width, leftMid.y * canvas.height);
             ctx.lineTo(rightMid.x * canvas.width, rightMid.y * canvas.height);
             ctx.strokeStyle = "yellow";
             ctx.lineWidth = 5;
-            ctx.stroke();
+            ctx.stroke();*/
           }
 
           setDebugInfo(debug);

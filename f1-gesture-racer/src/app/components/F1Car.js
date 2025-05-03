@@ -54,7 +54,7 @@ import { useGLTF } from "@react-three/drei";
       }, true);
       
       // Apply turning with dampening to reduce jitter
-      const turnAmount = steering / 40; // Reduced steering intensity
+      const turnAmount = steering / 20; // Reduced steering intensity
       body.setAngvel({ x: 0, y: turnAmount, z: 0 }, true);
       
       // === INDEPENDENT CAMERA SYSTEM ===

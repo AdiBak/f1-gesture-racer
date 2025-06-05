@@ -15,7 +15,7 @@ const FormulaTrack = () => {
        <primitive
          object={scene}
          scale={20}
-         position={[35, 0, -20]} // aligned with car spawn
+         position={[35, -10, -20]} // aligned with car spawn
          rotation={[0, 23.5, 0]} // your custom orientation
        />
      </RigidBody>

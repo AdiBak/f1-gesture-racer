@@ -45,6 +45,8 @@ const HandTracker = forwardRef(
       const setup = async () => {
         await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js");
         await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js");
+        await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"); // ✅ required
+
 
         const hands = new window.Hands({
           locateFile: (file) =>
@@ -114,12 +116,27 @@ const HandTracker = forwardRef(
             onSteeringChange(clampedAngle);
             debug.clampedAngle = clampedAngle;
 
-           /* ctx.beginPath();
+            ctx.beginPath();
             ctx.moveTo(leftMid.x * canvas.width, leftMid.y * canvas.height);
             ctx.lineTo(rightMid.x * canvas.width, rightMid.y * canvas.height);
             ctx.strokeStyle = "yellow";
             ctx.lineWidth = 5;
-            ctx.stroke();*/
+            ctx.stroke();
+
+            if (results.multiHandLandmarks) {
+              for (let i = 0; i < results.multiHandLandmarks.length; i++) {
+                const landmarks = results.multiHandLandmarks[i];
+                drawConnectors(ctx, landmarks, window.HAND_CONNECTIONS, {
+                  color: "#00FF00",
+                  lineWidth: 2,
+                });
+                drawLandmarks(ctx, landmarks, {
+                  color: "#FF0000",
+                  lineWidth: 1,
+                });
+              }
+            }
+
           }
 
           setDebugInfo(debug);
@@ -176,8 +193,7 @@ const HandTracker = forwardRef(
       <div className="absolute top-0 left-0 w-[180px] h-[120px] z-50 border-2 border-white rounded overflow-hidden">
         <video
           ref={webcamRef}
-          className="absolute w-full h-full object-cover"
-          style={{ transform: "scaleX(-1)" }}
+          className="hidden"
           autoPlay
           playsInline
           muted

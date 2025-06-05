@@ -45,14 +45,14 @@ export default function Home() {
           onGearChange={setGear}
           onDirectionChange={setDirection}
         /> 
-        <video
+        {/*<video
           ref={miniCamRef}
           className="w-full h-full"
           autoPlay
           playsInline
           muted
           style={{ transform: "scaleX(-1)" }}
-        />
+        />*/}
       </div>
 
     </main>

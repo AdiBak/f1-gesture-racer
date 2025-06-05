@@ -1,8 +1,11 @@
 # 🏎️ F1 Gesture Racer
 
-**F1 Gesture Racer** is an experimental 3D racing game controlled entirely with hand gestures using your webcam. Instead of a traditional keyboard or controller, players accelerate, brake, and steer with intuitive hand movements — bringing computer vision and racing together in a futuristic web experience.
+**F1 Gesture Racer** is an experimental 3D racing simulator controlled entirely with hand gestures using your webcam. Instead of a traditional keyboard or controller, you can accelerate, brake, and steer with intuitive hand movements — bringing computer vision and racing together in a futuristic web experience.
 
-![Demo Screenshot](./screenshots/demo.png)
+Here's a quick demo:
+
+https://github.com/user-attachments/assets/144c32d5-b3d6-4129-b1e0-f31d65c01ec1
+
 
 ## 🎮 How It Works
 

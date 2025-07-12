@@ -8,15 +8,15 @@
 
 // FormulaTrack component – loads your track model and applies colliders.
 const FormulaTrack = () => {
-  const { scene } = useGLTF("/models/karting_track.glb");
+  const { scene } = useGLTF("/models/city_speedway_v2.glb");
  
    return (
      <RigidBody type="fixed" colliders="trimesh">
        <primitive
          object={scene}
-         scale={20}
-         position={[35, -10, -20]} // aligned with car spawn
-         rotation={[0, 23.5, 0]} // your custom orientation
+         scale={50}
+         position={[-360, -21, -380]} // aligned with car spawn
+         rotation={[0, 0, 0]} // your custom orientation
        />
      </RigidBody>
   );
